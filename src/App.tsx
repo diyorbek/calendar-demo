@@ -133,10 +133,10 @@ function EventCard({ dayEvent }: EventCardProps) {
       role="button" // selection should be controlled by js, not by css, cuz events maybe split across days and css :active won't work properly
       className="cursor-pointer absolute bg-blue-500 text-white rounded px-1 shadow-[0_0_5px_rgba(0,0,0)] active:z-10 active:opacity-80 active:bg-emerald-700"
       style={{
-        top: dayEvent.top,
-        left: dayEvent.left,
-        height: dayEvent.height,
-        right: 2,
+        top: dayEvent.top + '%',
+        left: dayEvent.left + '%',
+        height: dayEvent.height + '%',
+        right: 0,
       }}
     >
       {dayEvent.localCalendarEvent.calendarEvent.title}
