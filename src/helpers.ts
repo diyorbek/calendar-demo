@@ -77,6 +77,8 @@ export function createWeekDayEvents(
   return weekDayEvents;
 }
 
+const HOUR_HEIGHT_PX = 48;
+
 // There are maybe some redundant checks or more edge cases to cover
 export function generateDayEvents(
   events: LocalCalendarEvent[],
@@ -89,8 +91,9 @@ export function generateDayEvents(
   return events.map((event, i) => {
     const start = dayjs(event.localStart).tz(timezone);
     const end = dayjs(event.localEnd).tz(timezone);
-    const top = start.hour() * 48 + (start.minute() / 60) * 48;
-    const height = end.diff(start, 'minute') * (48 / 60);
+    const top =
+      start.hour() * HOUR_HEIGHT_PX + (start.minute() / 60) * HOUR_HEIGHT_PX;
+    const height = end.diff(start, 'minute') * (HOUR_HEIGHT_PX / 60);
 
     const isSameTimePrev =
       i > 0 &&
