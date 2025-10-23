@@ -13,7 +13,7 @@ import {
 dayjs.extend(minMax);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-const LOCAL_TIMEZONE = 'Asia/Tashkent'; // needs dayjs wrapper to make it consistent
+const LOCAL_TIMEZONE = 'America/Mazatlan'; // needs dayjs wrapper to make it consistent
 
 const currentWeekStart = getWeekStart(new Date(), LOCAL_TIMEZONE);
 const currentWeekEvents = getLocalEventsForWeek(
@@ -26,8 +26,11 @@ const currentWeekDayEvents = createWeekDayEvents(
   currentWeekStart,
   LOCAL_TIMEZONE
 );
+
 const currentWeek = [...Array(7)].map((_, i) => currentWeekStart.add(i, 'day'));
 const dayLabels = currentWeek.map((day) => day.format('ddd DD.MM'));
+const timezoneOffset = dayjs.tz(new Date(), LOCAL_TIMEZONE).utcOffset() / 60;
+const timezoneLabel = `GMT${timezoneOffset >= 0 ? '+' : ''}${timezoneOffset}`;
 
 export function App() {
   return (
@@ -57,8 +60,10 @@ function WeekView({ days, weekEvents, timezone }: WeekViewProps) {
   return (
     <div className="flex-1 flex flex-col">
       {/* days header */}
-      <div className="flex sticky top-0 bg-gray-800/20 z-10">
-        <div className="sticky left-0 bg-white w-[40px] shrink-0 z-1"></div>
+      <div className="flex sticky top-0 bg-gray-800/20 z-20">
+        <div className="sticky left-0 bg-white w-[60px] shrink-0 z-1">
+          {timezoneLabel}
+        </div>
         <div className="flex-1 flex">
           {days.map((day, i) => (
             <div key={i} className="flex-1 min-w-[120px] text-center">
@@ -81,11 +86,11 @@ function WeekView({ days, weekEvents, timezone }: WeekViewProps) {
         </div>
 
         {/* hours column */}
-        <div className="flex flex-col sticky left-0 w-[40px] bg-gray-400/20">
+        <div className="flex flex-col sticky left-0 w-[60px] z-10 bg-gray-400/20">
           {[...Array(24)].map((_, i) => (
             <div key={i} className="min-h-12">
               {i !== 0 && (
-                <div className="-mt-2 w-[40px] pr-1 text-xs text-right">
+                <div className="-mt-2 w-[60px] pr-1 text-xs text-right">
                   {i}:00
                 </div>
               )}
@@ -93,7 +98,7 @@ function WeekView({ days, weekEvents, timezone }: WeekViewProps) {
           ))}
         </div>
 
-        <div className="flex-1 flex isolate">
+        <div className="flex-1 flex">
           {weekEvents.map((dayEvents, i) => (
             <div key={i} className="relative flex-1 border-r min-w-[120px]">
               <DayColumn events={dayEvents} timezone={timezone} />

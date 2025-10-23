@@ -53,7 +53,7 @@ export function createWeekDayEvents(
     const eventEnd = dayjs.tz(event.localEnd, localTimezone);
     const dayIndex = eventStart.diff(localWeekStart, 'day');
 
-    if (eventEnd.diff(eventStart, 'day') > 0) {
+    if (eventStart.day() !== eventEnd.day()) {
       // Multi-day event, split it
       const endOfStartDay = eventStart.endOf('day');
       weekDayEvents[dayIndex].push({
