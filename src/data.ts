@@ -12,8 +12,8 @@ export interface CalendarEvent {
 
 export interface LocalCalendarEvent {
   calendarEvent: CalendarEvent;
-  localStart: string; // ISO
-  localEnd: string; // ISO
+  localStart: Date;
+  localEnd: Date;
 }
 
 export interface DayEvent {

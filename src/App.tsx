@@ -12,7 +12,7 @@ import {
 dayjs.extend(minMax);
 dayjs.extend(utc);
 dayjs.extend(timezone);
-const LOCAL_TIMEZONE = 'Asia/Tashkent';
+const LOCAL_TIMEZONE = 'Asia/Tashkent'; // needs dayjs wrapper to make it consistent
 
 const currentWeekStart = getWeekStart(new Date(), LOCAL_TIMEZONE);
 const currentWeekEvents = getLocalEventsForWeek(
@@ -22,7 +22,8 @@ const currentWeekEvents = getLocalEventsForWeek(
 );
 const currentWeekDayEvents = createWeekDayEvents(
   currentWeekEvents,
-  currentWeekStart
+  currentWeekStart,
+  LOCAL_TIMEZONE
 );
 const currentWeek = [...Array(7)].map((_, i) => currentWeekStart.add(i, 'day'));
 const dayLabels = currentWeek.map((day) => day.format('ddd DD.MM'));
@@ -36,15 +37,22 @@ export function App() {
 }
 
 function Calendar() {
-  return <WeekView days={dayLabels} weekEvents={currentWeekDayEvents} />;
+  return (
+    <WeekView
+      days={dayLabels}
+      weekEvents={currentWeekDayEvents}
+      timezone={LOCAL_TIMEZONE}
+    />
+  );
 }
 
 interface WeekViewProps {
   days: string[];
   weekEvents: LocalCalendarEvent[][];
+  timezone: string;
 }
 
-function WeekView({ days, weekEvents }: WeekViewProps) {
+function WeekView({ days, weekEvents, timezone }: WeekViewProps) {
   return (
     <div className="flex-1 flex flex-col">
       {/* days header */}
@@ -87,7 +95,7 @@ function WeekView({ days, weekEvents }: WeekViewProps) {
         <div className="flex-1 flex">
           {weekEvents.map((dayEvents, i) => (
             <div key={i} className="relative flex-1 border-r min-w-[120px]">
-              <DayColumn events={dayEvents} />
+              <DayColumn events={dayEvents} timezone={timezone} />
             </div>
           ))}
         </div>
@@ -96,13 +104,19 @@ function WeekView({ days, weekEvents }: WeekViewProps) {
   );
 }
 
-function DayColumn({ events }: { events: LocalCalendarEvent[] }) {
+function DayColumn({
+  events,
+  timezone,
+}: {
+  events: LocalCalendarEvent[];
+  timezone: string;
+}) {
   let prevLongestEventEnd: dayjs.Dayjs | null = null;
   let prevLeft = 0;
 
   const dayEvents: DayEvent[] = events.map((event, i) => {
-    const start = dayjs(event.localStart);
-    const end = dayjs(event.localEnd);
+    const start = dayjs(event.localStart).tz(timezone);
+    const end = dayjs(event.localEnd).tz(timezone);
     const top = start.hour() * 48 + (start.minute() / 60) * 48;
     const height = end.diff(start, 'minute') * (48 / 60);
 
@@ -112,8 +126,12 @@ function DayColumn({ events }: { events: LocalCalendarEvent[] }) {
 
     const isSameTimePrev =
       i > 0 &&
-      dayjs(events[i - 1].localStart).isSame(start) &&
-      dayjs(events[i - 1].localEnd).isSame(end);
+      dayjs(events[i - 1].localStart)
+        .tz(timezone)
+        .isSame(start) &&
+      dayjs(events[i - 1].localEnd)
+        .tz(timezone)
+        .isSame(end);
 
     const left =
       (!!prevLongestEventEnd && prevLongestEventEnd.isAfter(end)) ||
