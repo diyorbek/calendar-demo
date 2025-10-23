@@ -5,6 +5,7 @@ import utc from 'dayjs/plugin/utc';
 import { mockEvents, type DayEvent, type LocalCalendarEvent } from './data';
 import {
   createWeekDayEvents,
+  generateDayEvents,
   getLocalEventsForWeek,
   getWeekStart,
 } from './helpers';
@@ -92,7 +93,7 @@ function WeekView({ days, weekEvents, timezone }: WeekViewProps) {
           ))}
         </div>
 
-        <div className="flex-1 flex">
+        <div className="flex-1 flex isolate">
           {weekEvents.map((dayEvents, i) => (
             <div key={i} className="relative flex-1 border-r min-w-[120px]">
               <DayColumn events={dayEvents} timezone={timezone} />
@@ -111,43 +112,7 @@ function DayColumn({
   events: LocalCalendarEvent[];
   timezone: string;
 }) {
-  let prevLongestEventEnd: dayjs.Dayjs | null = null;
-  let prevLeft = 0;
-
-  const dayEvents: DayEvent[] = events.map((event, i) => {
-    const start = dayjs(event.localStart).tz(timezone);
-    const end = dayjs(event.localEnd).tz(timezone);
-    const top = start.hour() * 48 + (start.minute() / 60) * 48;
-    const height = end.diff(start, 'minute') * (48 / 60);
-
-    prevLongestEventEnd = prevLongestEventEnd
-      ? dayjs.max(prevLongestEventEnd, end)
-      : end;
-
-    const isSameTimePrev =
-      i > 0 &&
-      dayjs(events[i - 1].localStart)
-        .tz(timezone)
-        .isSame(start) &&
-      dayjs(events[i - 1].localEnd)
-        .tz(timezone)
-        .isSame(end);
-
-    const left =
-      (!!prevLongestEventEnd && prevLongestEventEnd.isAfter(end)) ||
-      isSameTimePrev
-        ? prevLeft + 20
-        : 0;
-
-    prevLeft = left;
-
-    return {
-      localCalendarEvent: event,
-      top,
-      left,
-      height,
-    };
-  });
+  const dayEvents: DayEvent[] = generateDayEvents(events, timezone);
 
   return (
     <div className="absolute inset-0">
@@ -165,7 +130,8 @@ interface EventCardProps {
 function EventCard({ dayEvent }: EventCardProps) {
   return (
     <div
-      className="absolute bg-blue-500 text-white rounded px-1 shadow-[0_0_5px_rgba(0,0,0)]"
+      role="button" // selection should be controlled by js, not by css, cuz events maybe split across days and css :active won't work properly
+      className="cursor-pointer absolute bg-blue-500 text-white rounded px-1 shadow-[0_0_5px_rgba(0,0,0)] active:z-10 active:opacity-80 active:bg-emerald-700"
       style={{
         top: dayEvent.top,
         left: dayEvent.left,

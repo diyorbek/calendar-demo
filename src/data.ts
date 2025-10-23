@@ -11,12 +11,18 @@ export interface CalendarEvent {
 }
 
 export interface LocalCalendarEvent {
+  // TODO: its better to have id and get it from store
+  // when needed than duplicating data when changing immutabe state.
+  // Right now its ok as there is no state management
   calendarEvent: CalendarEvent;
   localStart: Date;
   localEnd: Date;
 }
 
 export interface DayEvent {
+  // TODO: its better to have id and get it from store
+  // when needed than duplicating data when changing immutabe state.
+  // Right now its ok as there is no state management
   localCalendarEvent: LocalCalendarEvent;
   top: number;
   left: number;
@@ -50,7 +56,17 @@ export const mockEvents: CalendarEvent[] = [
     start: '2025-10-21 7:00',
     end: '2025-10-21 9:00',
     timezone: 'Europe/Warsaw',
-    title: 'Design Review 1',
+    title: 'Design Review 1.1',
+    description: 'Review new design mockups with the design team.',
+    updatedAt: Date.now(),
+  },
+  {
+    id: '3',
+    type: 'SINGULAR',
+    start: '2025-10-21 7:20',
+    end: '2025-10-21 8:00',
+    timezone: 'Europe/Warsaw',
+    title: 'Design Review 1.2',
     description: 'Review new design mockups with the design team.',
     updatedAt: Date.now(),
   },
@@ -60,17 +76,37 @@ export const mockEvents: CalendarEvent[] = [
     start: '2025-10-21 7:00',
     end: '2025-10-21 9:00',
     timezone: 'Europe/Warsaw',
-    title: 'Design Review 2',
+    title: 'Design Review 1.3',
     description: 'Review new design mockups with the design team.',
     updatedAt: Date.now(),
   },
   {
     id: '3',
     type: 'SINGULAR',
-    start: '2025-10-21 7:30',
-    end: '2025-10-21 9:00',
+    start: '2025-10-21 7:15',
+    end: '2025-10-21 11:00',
     timezone: 'Europe/Warsaw',
-    title: 'Design Review 20',
+    title: 'Design Review 2.1',
+    description: 'Review new design mockups with the design team.',
+    updatedAt: Date.now(),
+  },
+  {
+    id: '3',
+    type: 'SINGULAR',
+    start: '2025-10-21 8:30',
+    end: '2025-10-21 10:00',
+    timezone: 'Europe/Warsaw',
+    title: 'Design Review 2.2',
+    description: 'Review new design mockups with the design team.',
+    updatedAt: Date.now(),
+  },
+  {
+    id: '3',
+    type: 'SINGULAR',
+    start: '2025-10-21 10:30',
+    end: '2025-10-21 12:30',
+    timezone: 'Europe/Warsaw',
+    title: 'Design Review 2.3',
     description: 'Review new design mockups with the design team.',
     updatedAt: Date.now(),
   },
